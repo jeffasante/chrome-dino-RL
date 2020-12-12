@@ -1,5 +1,4 @@
-from utils.replay_buffer.ReplayBuffer import memory
-from dqn_models import DQN, DqnRam
+
 # from main import 
 # from gym import env
 # from utils imp
@@ -10,35 +9,10 @@ import random
 import math
 
 
-GAMMA = 0.999
-BATCH_SIZE = 64
-EPS_START = 0.9
-EPS_END = 0.05
-EPS_DECAY = 200
-TARGET_UPDATE = 10
-
-
-def train_state(): 
-if ram:
-    policy_net = DqnRam(num_actions=action_size)
-    target_net = DqnRam(num_actions=action_size)
-
-else:
-    policy_net = DQN()
-    target_net = DQN()
-
-    
-action_size = env.action_space.n
-
-target_net.load_state_dict(policy_net.state_dict())
-target_net.eval()
-
-optimizer = optim.Adam(policy_net.parameters(), lr=5e-4) 
-memory = ReplayMemory(int(1e5))
 
 
 
-def learn():
+def learn(*args):
 
     if len(memory) < BATCH_SIZE:
         return
@@ -82,7 +56,7 @@ def learn():
     
 steps_done = 0
 
-def select_epilson_greedy_action(state):
+def select_epilson_greedy_action(state, *args):
     global steps_done
     
     sample = random.random()
@@ -100,7 +74,7 @@ def select_epilson_greedy_action(state):
                             dtype=torch.long)
        
     
-def train(n_episodes=2000):
+def train_dqn(*args):
    
     scores = [] # list containing scores from each episode
     scores_window = deque(maxlen=100) # last 100 scores
@@ -114,7 +88,7 @@ def train(n_episodes=2000):
 
         for t in count():
 
-            action = select_epilson_greedy_action(state)
+            action = select_epilson_greedy_action(state, *args)
             _, reward, done, _ = env.step(action.item())
 
             reward = torch.tensor([reward],  dtype=torch.float)
@@ -134,7 +108,7 @@ def train(n_episodes=2000):
             state = next_state 
 
             # Perform one step of Optimization (on the target network)
-            learn()
+            learn(*args)
 
             if done:
                 break
@@ -161,12 +135,20 @@ def train(n_episodes=2000):
     print('Complete')
 
     return scores
-    # plot the scores
-#     fig = plt.figure()
-#     ax = fig.add_subplot(111)
-#     plt.plot(np.arange(len(scores)), scores)
-#     plt.ylabel('Score')
-#     plt.xlabel('Episode #')
-#     plt.show()        
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     

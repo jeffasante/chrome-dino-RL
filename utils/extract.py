@@ -18,6 +18,7 @@ resize = T.Compose([T.ToPILImage(),
                     T.ToTensor()])
 
 
+def re(): return 'shit'
 
 def get_screen(env):
     
