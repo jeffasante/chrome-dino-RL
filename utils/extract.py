@@ -1,6 +1,8 @@
 import torchvision.transforms as T
+import torch
+
 from PIL import Image
-import numpy
+import numpy as np
 
 
 '''Input Extraction'''
@@ -17,8 +19,6 @@ resize = T.Compose([T.ToPILImage(),
                     T.Resize((80,80,), interpolation=Image.CUBIC),
                     T.ToTensor()])
 
-
-def re(): return 'shit'
 
 def get_screen(env):
     

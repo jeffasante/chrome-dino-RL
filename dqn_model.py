@@ -33,7 +33,7 @@ class DQN(nn.Module):
 
     
 # for testing   
-class DqnRAM(nn.Module):
+class MLP(nn.Module):
     
     """Actor (Policy) Model."""
     
@@ -43,7 +43,7 @@ class DqnRAM(nn.Module):
             in_features: number of features of input.
             num_actions: number of action-value to output, one-to-one correspondence to action in game.
         """
-        super(DqnRAM, self).__init__()
+        super(MLP, self).__init__()
         
         self.fc1 = nn.Linear(in_features, 256)
         self.fc2 = nn.Linear(256, 128)

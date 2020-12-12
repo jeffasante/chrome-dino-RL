@@ -1,25 +1,24 @@
-
-# from main import 
-# from gym import env
-# from utils imp
-
+from collections import deque
+from itertools import count
 
 import torch
+import torch.nn.functional as F
+
 import random
 import math
 
+import numpy as np
 
 
 
-
-def learn(*args):
+def learn(memory, BATCH_SIZE, policy_net, target_net, optimizer):
 
     if len(memory) < BATCH_SIZE:
         return
     transitions = memory.sample(BATCH_SIZE)
     
     #This converts batch-array of Transitions to Transition of batch-arrays.
-    batch = Transition(*zip(*transitions))
+    batch = memory.Transition(*zip(*transitions))
 
     # Compute a mask of non-final states and concatenate the batch elements
     # (a final state would've been the one after which simulation ended)
@@ -56,7 +55,7 @@ def learn(*args):
     
 steps_done = 0
 
-def select_epilson_greedy_action(state, *args):
+def select_epilson_greedy_action(state, policy_net, BATCH_SIZE,EPS_START, EPS_END, EPS_DECAY, TARGET_UPDATE):
     global steps_done
     
     sample = random.random()
@@ -74,21 +73,23 @@ def select_epilson_greedy_action(state, *args):
                             dtype=torch.long)
        
     
-def train_dqn(*args):
+def train_dqn(env, policy_net, target_net, memory, GAMMA, 
+                             BATCH_SIZE,EPS_START, EPS_END, EPS_DECAY, TARGET_UPDATE, n_episodes, get_screen, optimizer):
    
     scores = [] # list containing scores from each episode
     scores_window = deque(maxlen=100) # last 100 scores
-
+    
+    print()
     for i_episode in range(n_episodes):
         # Initialize the environment and state
         score = 0
 
         env.reset()
-        state = get_screen()
+        state = get_screen(env)
 
         for t in count():
 
-            action = select_epilson_greedy_action(state, *args)
+            action = select_epilson_greedy_action(state, policy_net, BATCH_SIZE,EPS_START, EPS_END, EPS_DECAY, TARGET_UPDATE)
             _, reward, done, _ = env.step(action.item())
 
             reward = torch.tensor([reward],  dtype=torch.float)
@@ -97,7 +98,7 @@ def train_dqn(*args):
 
             # Observe new state
             if not done:
-                next_state= get_screen()
+                next_state= get_screen(env)
             else:
                 next_state = None
 
@@ -108,7 +109,7 @@ def train_dqn(*args):
             state = next_state 
 
             # Perform one step of Optimization (on the target network)
-            learn(*args)
+            learn(memory, BATCH_SIZE, policy_net, target_net, optimizer)
 
             if done:
                 break
@@ -132,8 +133,6 @@ def train_dqn(*args):
             break
             
     
-    print('Complete')
-
     return scores
 
 
